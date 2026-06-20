@@ -1,0 +1,625 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Belize Solar — Free Solar Assessment</title>
+<style>
+  :root{
+    --ink:#0E2A2B;
+    --sun:#F2A93B;
+    --sun-deep:#D9871F;
+    --teal:#0F6E63;
+    --teal-deep:#0A4F47;
+    --sand:#FBF4E6;
+    --paper:#FFFFFF;
+    --line:#E4D9C0;
+    --danger:#B3492C;
+    --radius:14px;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    font-family:'Segoe UI', Helvetica, Arial, sans-serif;
+    background:var(--sand);
+    color:var(--ink);
+    -webkit-font-smoothing:antialiased;
+  }
+  .wrap{max-width:640px;margin:0 auto;padding:0 0 60px;}
+
+  header{
+    background:linear-gradient(135deg,var(--teal-deep),var(--teal) 65%, var(--sun-deep));
+    color:#fff;
+    padding:28px 20px 34px;
+    border-radius:0 0 28px 28px;
+  }
+  header .eyebrow{
+    font-size:12px;
+    letter-spacing:.14em;
+    text-transform:uppercase;
+    opacity:.85;
+    font-weight:600;
+  }
+  header h1{
+    margin:6px 0 4px;
+    font-size:26px;
+    line-height:1.25;
+    font-weight:800;
+  }
+  header p{
+    margin:0;
+    font-size:14px;
+    opacity:.92;
+    max-width:46ch;
+  }
+
+  .progress-track{
+    position:sticky;top:0;z-index:5;
+    background:var(--sand);
+    padding:14px 20px 10px;
+  }
+  .progress-bar{
+    height:6px;border-radius:6px;background:#E9DEC4;overflow:hidden;
+  }
+  .progress-fill{
+    height:100%;width:14%;background:var(--sun);border-radius:6px;
+    transition:width .35s ease;
+  }
+  .progress-label{
+    font-size:12px;color:var(--teal-deep);font-weight:600;margin-top:6px;
+  }
+
+  .card{
+    background:var(--paper);
+    border:1px solid var(--line);
+    border-radius:var(--radius);
+    margin:16px 20px 0;
+    padding:22px 20px;
+    box-shadow:0 1px 2px rgba(14,42,43,.04);
+  }
+  .card.hidden{display:none;}
+
+  .section-num{
+    display:inline-flex;align-items:center;justify-content:center;
+    width:26px;height:26px;border-radius:50%;
+    background:var(--teal);color:#fff;font-size:13px;font-weight:700;
+    margin-right:8px;
+  }
+  .section-title{
+    display:flex;align-items:center;
+    font-size:17px;font-weight:800;color:var(--teal-deep);
+    margin-bottom:4px;
+  }
+  .section-sub{
+    font-size:13px;color:#6B6555;margin:0 0 18px 34px;
+  }
+
+  label.field-label{
+    display:block;font-size:13.5px;font-weight:700;color:var(--ink);margin:18px 0 6px;
+  }
+  label.field-label .opt{
+    font-weight:400;color:#8A8370;font-size:12px;
+  }
+  .hint{font-size:12px;color:#8A8370;margin:-2px 0 6px;}
+
+  input[type=text],input[type=number],input[type=tel],input[type=email],textarea,select{
+    width:100%;
+    border:1.5px solid var(--line);
+    border-radius:10px;
+    padding:12px 13px;
+    font-size:15px;
+    font-family:inherit;
+    background:#fff;
+    color:var(--ink);
+  }
+  input:focus,textarea:focus,select:focus{
+    outline:none;border-color:var(--teal);box-shadow:0 0 0 3px rgba(15,110,99,.15);
+  }
+  textarea{resize:vertical;min-height:70px;}
+
+  .choice-grid{display:flex;flex-direction:column;gap:8px;}
+  .choice{
+    border:1.5px solid var(--line);
+    border-radius:10px;
+    padding:12px 14px;
+    display:flex;align-items:center;gap:10px;
+    cursor:pointer;
+    font-size:14.5px;
+    background:#fff;
+    transition:border-color .15s, background .15s;
+    min-height:44px;
+  }
+  .choice input{accent-color:var(--teal);width:18px;height:18px;flex:0 0 auto;}
+  .choice:has(input:checked){
+    border-color:var(--teal);background:#EFF6F4;font-weight:600;
+  }
+
+  .qty-row{
+    display:flex;align-items:center;justify-content:space-between;
+    border:1.5px solid var(--line);border-radius:10px;
+    padding:10px 12px;margin-bottom:8px;
+  }
+  .qty-row .name{font-size:14.5px;font-weight:600;}
+  .qty-row .ref{font-size:11.5px;color:#8A8370;display:block;}
+  .qty-stepper{display:flex;align-items:center;gap:10px;}
+  .qty-stepper button{
+    width:32px;height:32px;border-radius:8px;border:1.5px solid var(--line);
+    background:#fff;font-size:17px;font-weight:700;color:var(--teal-deep);
+    cursor:pointer;
+  }
+  .qty-stepper span{min-width:18px;text-align:center;font-weight:700;}
+
+  .upload-box{
+    border:2px dashed var(--line);border-radius:12px;
+    padding:22px 16px;text-align:center;color:#8A8370;font-size:13.5px;
+    background:#FCFAF3;
+  }
+  .upload-box input{display:block;margin:10px auto 0;}
+
+  .nav-row{
+    display:flex;justify-content:space-between;gap:10px;margin-top:24px;
+  }
+  button.btn{
+    appearance:none;border:none;border-radius:10px;
+    padding:13px 20px;font-size:15px;font-weight:700;cursor:pointer;
+    flex:1;
+  }
+  .btn-primary{background:var(--sun);color:var(--teal-deep);}
+  .btn-primary:active{background:var(--sun-deep);}
+  .btn-ghost{background:transparent;color:var(--teal-deep);border:1.5px solid var(--line);}
+
+  .toggle-extra{display:none;margin-top:10px;}
+  .toggle-extra.show{display:block;}
+
+  .summary-card{
+    background:var(--teal-deep);color:#fff;border-radius:var(--radius);
+    margin:16px 20px 0;padding:24px 20px;
+  }
+  .summary-card h2{margin:0 0 6px;font-size:19px;}
+  .summary-card p{margin:0 0 16px;font-size:13.5px;opacity:.9;}
+  .summary-pre{
+    background:rgba(255,255,255,.08);border-radius:10px;padding:14px;
+    font-size:12.5px;line-height:1.6;white-space:pre-wrap;font-family:'Courier New',monospace;
+    max-height:220px;overflow-y:auto;margin-bottom:16px;
+  }
+  a.btn-link{
+    display:block;text-decoration:none;text-align:center;
+  }
+  .btn-whatsapp{background:#25D366;color:#06210F;}
+  .btn-email{background:#fff;color:var(--teal-deep);margin-top:10px;}
+
+  .copy-banner{
+    margin-top:16px;
+    background:var(--sun);
+    border:2px solid var(--sun-deep);
+    border-radius:12px;
+    padding:14px 16px;
+    display:flex;
+    align-items:center;
+    gap:12px;
+    box-shadow:0 2px 10px rgba(0,0,0,.18);
+  }
+  .copy-banner-icon{font-size:28px;flex:0 0 auto;}
+  .copy-banner-title{
+    font-size:18px;font-weight:900;color:var(--teal-deep);letter-spacing:.03em;
+    margin-bottom:2px;
+  }
+  .copy-banner-sub{
+    font-size:13.5px;color:#1A1206;line-height:1.4;font-weight:600;
+  }
+  .copy-banner-sub strong{text-decoration:underline;}
+
+  footer{
+    text-align:center;font-size:11.5px;color:#A29A82;padding:24px 20px 0;
+  }
+</style>
+</head>
+<body>
+
+<div class="wrap">
+
+  <header>
+    <div class="eyebrow">Senmonni LLC &middot; Belize Solar</div>
+    <h1>Let's see what solar could do for your home.</h1>
+    <p>Answer a few quick questions about your property and your last electricity bill. Takes about 3 minutes — no commitment, just numbers.</p>
+  </header>
+
+  <div class="progress-track">
+    <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+    <div class="progress-label" id="progressLabel">Section 1 of 7 — Your Info</div>
+  </div>
+
+  <!-- SECTION 1 -->
+  <div class="card section" data-section="1">
+    <div class="section-title"><span class="section-num">1</span> Your Info</div>
+    <p class="section-sub">So we know who we're talking to.</p>
+
+    <label class="field-label">Full name</label>
+    <input type="text" id="q_name" placeholder="e.g. Maria Gonzalez">
+
+    <label class="field-label">WhatsApp / phone number</label>
+    <input type="tel" id="q_phone" placeholder="e.g. 6XX-XXXX">
+
+    <label class="field-label">Email <span class="opt">(optional)</span></label>
+    <input type="email" id="q_email" placeholder="you@example.com">
+
+    <label class="field-label">Property address</label>
+    <textarea id="q_address" placeholder="Street, town/village"></textarea>
+
+    <label class="field-label">District</label>
+    <select id="q_district">
+      <option value="">Select district</option>
+      <option>Belize</option>
+      <option>Cayo</option>
+      <option>Corozal</option>
+      <option>Orange Walk</option>
+      <option>Stann Creek</option>
+      <option>Toledo</option>
+      <option>Cayes</option>
+    </select>
+  </div>
+
+  <!-- SECTION 2 -->
+  <div class="card section hidden" data-section="2">
+    <div class="section-title"><span class="section-num">2</span> Your Property</div>
+    <p class="section-sub">Helps us figure out where panels would go and how many fit.</p>
+
+    <label class="field-label">Where would panels be installed?</label>
+    <div class="choice-grid" data-radio="q_install_location">
+      <label class="choice"><input type="radio" name="install_location" value="Roof"> Roof</label>
+      <label class="choice"><input type="radio" name="install_location" value="Land"> Land / ground mount</label>
+      <label class="choice"><input type="radio" name="install_location" value="Both"> Both</label>
+      <label class="choice"><input type="radio" name="install_location" value="Not sure"> Not sure</label>
+    </div>
+
+    <label class="field-label">Roof type</label>
+    <div class="choice-grid" data-radio="q_roof_type">
+      <label class="choice"><input type="radio" name="roof_type" value="Zinc / metal"> Zinc / metal</label>
+      <label class="choice"><input type="radio" name="roof_type" value="Cement / concrete"> Cement / concrete</label>
+      <label class="choice"><input type="radio" name="roof_type" value="Other"> Other</label>
+    </div>
+
+    <label class="field-label">Approx. roof size <span class="opt">(sq ft, if known)</span></label>
+    <input type="number" id="q_roof_size" placeholder="e.g. 1200">
+
+    <label class="field-label">House square footage</label>
+    <input type="number" id="q_house_sqft" placeholder="e.g. 1800">
+
+    <label class="field-label">Sun exposure</label>
+    <div class="choice-grid" data-radio="q_sun_exposure">
+      <label class="choice"><input type="radio" name="sun_exposure" value="Full sun most of day"> Full sun most of the day</label>
+      <label class="choice"><input type="radio" name="sun_exposure" value="Partial shade"> Partial shade part of the day</label>
+      <label class="choice"><input type="radio" name="sun_exposure" value="Heavily shaded"> Heavily shaded</label>
+    </div>
+
+    <label class="field-label">Already have solar or a generator?</label>
+    <div class="choice-grid" data-radio="q_existing_power">
+      <label class="choice"><input type="radio" name="existing_power" value="Yes"> Yes</label>
+      <label class="choice"><input type="radio" name="existing_power" value="No"> No</label>
+    </div>
+  </div>
+
+  <!-- SECTION 3 -->
+  <div class="card section hidden" data-section="3">
+    <div class="section-title"><span class="section-num">3</span> Your Electricity Bill</div>
+    <p class="section-sub">This is the most important part — it tells us how much power you actually use.</p>
+
+    <label class="field-label">Upload a photo of your most recent BEL bill</label>
+    <div class="upload-box">
+      📄 Tap to attach a photo
+      <input type="file" id="q_bill_upload" accept="image/*">
+      <div class="hint" style="margin-top:8px;">If you're sending this back via WhatsApp, you can skip this upload and just attach the photo directly in the chat.</div>
+    </div>
+
+    <label class="field-label">Average monthly bill amount <span class="opt">(BZD, backup in case photo is hard to read)</span></label>
+    <input type="number" id="q_avg_bill" placeholder="e.g. 220">
+
+    <label class="field-label">BEL meter number <span class="opt">(optional)</span></label>
+    <input type="text" id="q_meter_number" placeholder="Found on your bill">
+  </div>
+
+  <!-- SECTION 4 -->
+  <div class="card section hidden" data-section="4">
+    <div class="section-title"><span class="section-num">4</span> Appliances</div>
+    <p class="section-sub">Tell us what's running in the house. Use the + / − to set quantities.</p>
+
+    <div id="applianceList"></div>
+
+    <label class="field-label">Anything else major? <span class="opt">(optional)</span></label>
+    <textarea id="q_other_appliances" placeholder="e.g. water pump, 2 chest freezers, pool pump"></textarea>
+  </div>
+
+  <!-- SECTION 5 -->
+  <div class="card section hidden" data-section="5">
+    <div class="section-title"><span class="section-num">5</span> Overnight Usage</div>
+    <p class="section-sub">This helps us size the battery correctly — it's the part that's easy to get wrong.</p>
+
+    <label class="field-label">Which of these run overnight?</label>
+    <div class="choice-grid">
+      <label class="choice"><input type="checkbox" id="ov_fans" value="Fans"> Fans</label>
+      <label class="choice"><input type="checkbox" id="ov_ac" value="AC"> Air conditioning</label>
+      <label class="choice"><input type="checkbox" id="ov_fridge" value="Fridge"> Refrigerator/freezer</label>
+      <label class="choice"><input type="checkbox" id="ov_other" value="Other"> Other</label>
+    </div>
+
+    <label class="field-label">If AC runs overnight, roughly how many hours?</label>
+    <div class="choice-grid" data-radio="q_ac_hours">
+      <label class="choice"><input type="radio" name="ac_hours" value="None"> None</label>
+      <label class="choice"><input type="radio" name="ac_hours" value="1 to 4 hrs"> 1 to 4 hours</label>
+      <label class="choice"><input type="radio" name="ac_hours" value="5 to 8 hrs"> 5 to 8 hours</label>
+      <label class="choice"><input type="radio" name="ac_hours" value="All night"> All night</label>
+    </div>
+
+    <label class="field-label">Do you experience frequent power outages?</label>
+    <div class="choice-grid" data-radio="q_outages">
+      <label class="choice"><input type="radio" name="outages" value="Yes"> Yes</label>
+      <label class="choice"><input type="radio" name="outages" value="No"> No</label>
+    </div>
+
+    <div id="outageFreqWrap" class="toggle-extra">
+      <label class="field-label">How often?</label>
+      <div class="choice-grid" data-radio="q_outage_freq">
+        <label class="choice"><input type="radio" name="outage_freq" value="Rarely"> Rarely</label>
+        <label class="choice"><input type="radio" name="outage_freq" value="Monthly"> Monthly</label>
+        <label class="choice"><input type="radio" name="outage_freq" value="Weekly"> Weekly</label>
+        <label class="choice"><input type="radio" name="outage_freq" value="Very frequent"> Very frequent</label>
+      </div>
+    </div>
+  </div>
+
+  <!-- SECTION 6 -->
+  <div class="card section hidden" data-section="6">
+    <div class="section-title"><span class="section-num">6</span> Your Goals</div>
+    <p class="section-sub">Tell us what success looks like for you.</p>
+
+    <label class="field-label">What's your main goal? <span class="opt">(select all that apply)</span></label>
+    <div class="choice-grid">
+      <label class="choice"><input type="checkbox" id="goal_bill" value="Reduce my monthly BEL bill"> Reduce my monthly BEL bill</label>
+      <label class="choice"><input type="checkbox" id="goal_backup" value="Backup power during outages"> Backup power during outages</label>
+      <label class="choice"><input type="checkbox" id="goal_offgrid" value="Go fully off-grid"> Go fully off-grid</label>
+      <label class="choice"><input type="checkbox" id="goal_commercial" value="Commercial or farm use"> Commercial or farm use</label>
+    </div>
+
+    <label class="field-label">System type preference</label>
+    <div class="choice-grid" data-radio="q_system_type">
+      <label class="choice"><input type="radio" name="system_type" value="Grid-tied"> Grid-tied (reduce bill only)</label>
+      <label class="choice"><input type="radio" name="system_type" value="Hybrid with battery"> Hybrid with battery (bill reduction + backup)</label>
+      <label class="choice"><input type="radio" name="system_type" value="Full off-grid"> Full off-grid</label>
+    </div>
+
+    <label class="field-label">How are you thinking of financing this?</label>
+    <div class="choice-grid" data-radio="q_financing">
+      <label class="choice"><input type="radio" name="financing" value="Self-funded / cash"> Self-funded / cash</label>
+      <label class="choice"><input type="radio" name="financing" value="Bank loan"> Bank loan</label>
+      <label class="choice"><input type="radio" name="financing" value="DFC Belize loan"> DFC Belize loan</label>
+      <label class="choice"><input type="radio" name="financing" value="Not sure yet"> Not sure yet</label>
+    </div>
+
+    <label class="field-label">Decision timeline</label>
+    <div class="choice-grid" data-radio="q_timeline">
+      <label class="choice"><input type="radio" name="timeline" value="Ready now"> Ready now</label>
+      <label class="choice"><input type="radio" name="timeline" value="Within 3 months"> Within 3 months</label>
+      <label class="choice"><input type="radio" name="timeline" value="Just researching"> Just researching</label>
+    </div>
+  </div>
+
+  <!-- SECTION 7 -->
+  <div class="card section hidden" data-section="7">
+    <div class="section-title"><span class="section-num">7</span> Anything Else?</div>
+    <p class="section-sub">Last step — optional notes.</p>
+
+    <label class="field-label">Other products you might be interested in <span class="opt">(optional)</span></label>
+    <div class="choice-grid">
+      <label class="choice"><input type="checkbox" id="other_solar_fan_ac" value="Solar fans or solar AC"> Solar fans or solar AC</label>
+      <label class="choice"><input type="checkbox" id="other_portable_battery" value="Portable solar battery/lamp (for fishing)"> Portable solar battery/lamp (for fishing)</label>
+      <label class="choice"><input type="checkbox" id="other_misc_interest" value="Other"> Other</label>
+    </div>
+
+    <label class="field-label">Anything else we should know? <span class="opt">(optional)</span></label>
+    <textarea id="q_notes" placeholder="e.g. roof was redone in 2023, interested in solar fans or solar AC, interested in a portable solar battery/lamp for fishing"></textarea>
+
+    <label class="field-label">How did you hear about us? <span class="opt">(optional)</span></label>
+    <input type="text" id="q_source" placeholder="e.g. referral, Facebook, saw the truck">
+  </div>
+
+  <!-- NAV -->
+  <div class="card" id="navCard" style="box-shadow:none;border:none;background:transparent;padding:18px 0 0;margin:0 20px;">
+    <div class="nav-row">
+      <button class="btn btn-ghost" id="backBtn">Back</button>
+      <button class="btn btn-primary" id="nextBtn">Next</button>
+    </div>
+  </div>
+
+  <!-- SUMMARY / SEND -->
+  <div class="summary-card hidden" id="summaryCard">
+    <h2>You're all set 🌞</h2>
+    <p>Review your answers below, then send them to us. WhatsApp is fastest — don't forget to attach a photo of your bill in the chat too.</p>
+    <div class="summary-pre" id="summaryText"></div>
+    <button class="btn-link btn-whatsapp" id="sendWhatsapp" style="border-radius:10px;padding:13px;font-weight:700;border:none;width:100%;font-size:15px;cursor:pointer;">Send via WhatsApp</button>
+    <button class="btn-link btn-email" id="sendEmail" style="border-radius:10px;padding:13px;font-weight:700;border:none;width:100%;font-size:15px;cursor:pointer;margin-top:10px;">Send via Email instead</button>
+    <div id="copyNote" class="copy-banner" style="display:none;">
+      <div class="copy-banner-icon">📋</div>
+      <div>
+        <div class="copy-banner-title">PASTE NOW</div>
+        <div class="copy-banner-sub">Your answers are copied. Press and hold the message box, then tap <strong>Paste</strong>.</div>
+      </div>
+    </div>
+  </div>
+
+  <footer>Belize Solar &middot; Senmonni LLC &middot; Your info is only used to prepare your solar estimate.</footer>
+
+</div>
+
+<script>
+  const appliances = [
+    {id:'fans', name:'Ceiling / standing fans', ref:'~50 to 75W each'},
+    {id:'ac', name:'Window / split AC units', ref:'~1000 to 1500W each'},
+    {id:'fridge', name:'Refrigerator / freezer', ref:'~150 to 400W, runs continuously'},
+    {id:'tv', name:'TVs', ref:'~80 to 200W each'},
+    {id:'hot_water', name:'Hot water heater', ref:'~1500 to 4000W'},
+    {id:'dryer', name:'Electric dryer', ref:'~2000 to 3000W'},
+    {id:'stove', name:'Electric stove / range', ref:'~1500 to 3000W per burner'}
+  ];
+  const qty = {};
+  const list = document.getElementById('applianceList');
+  appliances.forEach(a=>{
+    qty[a.id]=0;
+    const row = document.createElement('div');
+    row.className='qty-row';
+    row.innerHTML = `
+      <div>
+        <span class="name">${a.name}</span>
+        <span class="ref">${a.ref}</span>
+      </div>
+      <div class="qty-stepper">
+        <button type="button" data-act="dec" data-id="${a.id}">−</button>
+        <span id="qty_${a.id}">0</span>
+        <button type="button" data-act="inc" data-id="${a.id}">+</button>
+      </div>`;
+    list.appendChild(row);
+  });
+  list.addEventListener('click', e=>{
+    const btn = e.target.closest('button');
+    if(!btn) return;
+    const id = btn.dataset.id;
+    if(btn.dataset.act==='inc') qty[id]++;
+    else qty[id] = Math.max(0, qty[id]-1);
+    document.getElementById('qty_'+id).textContent = qty[id];
+  });
+
+  // outage frequency toggle
+  document.querySelectorAll('input[name="outages"]').forEach(r=>{
+    r.addEventListener('change', e=>{
+      document.getElementById('outageFreqWrap').classList.toggle('show', e.target.value==='Yes');
+    });
+  });
+
+  // section nav
+  const sections = Array.from(document.querySelectorAll('.section'));
+  let current = 0;
+  const fill = document.getElementById('progressFill');
+  const label = document.getElementById('progressLabel');
+  const titles = ['Your Info','Your Property','Your Electricity Bill','Appliances','Overnight Usage','Your Goals','Anything Else?'];
+
+  function render(){
+    sections.forEach((s,i)=> s.classList.toggle('hidden', i!==current));
+    fill.style.width = ((current+1)/sections.length*100)+'%';
+    label.textContent = `Section ${current+1} of ${sections.length} — ${titles[current]}`;
+    document.getElementById('backBtn').style.visibility = current===0 ? 'hidden' : 'visible';
+    document.getElementById('nextBtn').textContent = current===sections.length-1 ? 'Review & Send' : 'Next';
+    document.getElementById('navCard').classList.toggle('hidden', false);
+    document.getElementById('summaryCard').classList.add('hidden');
+    window.scrollTo({top:0,behavior:'smooth'});
+  }
+
+  document.getElementById('backBtn').addEventListener('click', ()=>{
+    if(current>0){ current--; render(); }
+  });
+  document.getElementById('nextBtn').addEventListener('click', ()=>{
+    if(current < sections.length-1){ current++; render(); }
+    else { showSummary(); }
+  });
+
+  function val(id){ const el=document.getElementById(id); return el ? (el.value||'').trim() : ''; }
+  function radioVal(name){ const r=document.querySelector(`input[name="${name}"]:checked`); return r? r.value : ''; }
+  function checkedList(ids){ return ids.filter(id=>document.getElementById(id).checked); }
+
+  function buildSummary(){
+    const overnightMap = {ov_fans:'Fans', ov_ac:'AC', ov_fridge:'Fridge', ov_other:'Other'};
+    const overnight = checkedList(Object.keys(overnightMap)).map(id=>overnightMap[id]);
+    const otherProductsMap = {other_solar_fan_ac:'Solar fans or solar AC', other_portable_battery:'Portable solar battery/lamp (for fishing)', other_misc_interest:'Other'};
+    const otherProducts = checkedList(Object.keys(otherProductsMap)).map(id=>otherProductsMap[id]);
+    const goalsMap = {goal_bill:'Reduce my monthly BEL bill', goal_backup:'Backup power during outages', goal_offgrid:'Go fully off-grid', goal_commercial:'Commercial or farm use'};
+    const goals = checkedList(Object.keys(goalsMap)).map(id=>goalsMap[id]);
+    const lines = [
+`BELIZE SOLAR — PROSPECT INTAKE`,
+``,
+`-- Your Info --`,
+`Name: ${val('q_name')}`,
+`Phone: ${val('q_phone')}`,
+`Email: ${val('q_email')}`,
+`Address: ${val('q_address')}`,
+`District: ${val('q_district')}`,
+``,
+`-- Property --`,
+`Install location: ${radioVal('install_location')}`,
+`Roof type: ${radioVal('roof_type')}`,
+`Roof size: ${val('q_roof_size')} sq ft`,
+`House size: ${val('q_house_sqft')} sq ft`,
+`Sun exposure: ${radioVal('sun_exposure')}`,
+`Existing solar/generator: ${radioVal('existing_power')}`,
+``,
+`-- Electricity Bill --`,
+`Avg monthly bill: BZD ${val('q_avg_bill')}`,
+`Meter number: ${val('q_meter_number')}`,
+`Bill photo: ${document.getElementById('q_bill_upload').files.length ? 'Attached in form' : 'Will attach separately in WhatsApp'}`,
+``,
+`-- Appliances --`,
+...appliances.map(a=>`${a.name}: ${qty[a.id]}`),
+`Other: ${val('q_other_appliances')}`,
+``,
+`-- Overnight Usage --`,
+`Runs overnight: ${overnight.join(', ') || 'None selected'}`,
+`AC overnight hours: ${radioVal('ac_hours')}`,
+`Frequent outages: ${radioVal('outages')}${radioVal('outages')==='Yes' ? ' ('+radioVal('outage_freq')+')' : ''}`,
+``,
+`-- Goals --`,
+`Main goal(s): ${goals.join(', ') || 'None selected'}`,
+`System type: ${radioVal('system_type')}`,
+`Financing: ${radioVal('financing')}`,
+`Timeline: ${radioVal('timeline')}`,
+``,
+`-- Notes --`,
+`Other products interested in: ${otherProducts.join(', ') || 'None selected'}`,
+`${val('q_notes')}`,
+`Heard about us via: ${val('q_source')}`
+    ];
+    return lines.join('\n');
+  }
+
+  function showSummary(){
+    document.querySelectorAll('.section').forEach(s=>s.classList.add('hidden'));
+    document.getElementById('navCard').classList.add('hidden');
+    const text = buildSummary();
+    document.getElementById('summaryText').textContent = text;
+    document.getElementById('summaryCard').classList.remove('hidden');
+
+    const phoneForSales = "5016294028"; // Senmonni LLC / Belize Solar WhatsApp
+
+    function copyToClipboard(str){
+      if(navigator.clipboard && navigator.clipboard.writeText){
+        return navigator.clipboard.writeText(str);
+      }
+      const ta = document.createElement('textarea');
+      ta.value = str; ta.style.position='fixed'; ta.style.opacity='0';
+      document.body.appendChild(ta); ta.select();
+      try{ document.execCommand('copy'); }catch(e){}
+      document.body.removeChild(ta);
+      return Promise.resolve();
+    }
+
+    document.getElementById('sendWhatsapp').addEventListener('click', ()=>{
+      copyToClipboard(text).then(()=>{
+        document.getElementById('copyNote').style.display='flex';
+        const shortMsg = "Hi! I just completed my solar assessment. Pasting my answers below:";
+        window.open(`https://wa.me/${phoneForSales}?text=${encodeURIComponent(shortMsg)}`, '_blank');
+      });
+    });
+
+    document.getElementById('sendEmail').addEventListener('click', ()=>{
+      copyToClipboard(text).then(()=>{
+        document.getElementById('copyNote').style.display='flex';
+        const subject = 'Solar Assessment Request — ' + (val('q_name') || 'Prospect');
+        window.location.href = `mailto:info@belizesolar.com?subject=${encodeURIComponent(subject)}`;
+      });
+    });
+
+    fill.style.width = '100%';
+    label.textContent = 'All done!';
+  }
+
+  render();
+</script>
+
+</body>
+</html>
