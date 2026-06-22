@@ -77,6 +77,7 @@
     padding:22px 20px;
     box-shadow:0 1px 2px rgba(14,42,43,.04);
   }
+  .hidden{display:none !important;}
   .card.hidden{display:none;}
 
   .section-num{
@@ -219,7 +220,7 @@
 <div class="wrap">
 
   <header>
-    <div class="eyebrow">Senmonni LLC &middot; Belize Solar</div>
+    <div class="eyebrow">Lumova Group &middot; Belize Solar</div>
     <h1>Let's see what solar could do for your home.</h1>
     <p>Answer a few quick questions about your property and your last electricity bill. Takes about 3 minutes — no commitment, just numbers.</p>
   </header>
@@ -279,11 +280,24 @@
       <label class="choice"><input type="radio" name="roof_type" value="Other"> Other</label>
     </div>
 
+    <div id="roofDesignWrap" class="toggle-extra">
+      <label class="field-label">Roof design</label>
+      <div class="choice-grid" data-radio="q_roof_design">
+        <label class="choice"><input type="radio" name="roof_design" value="Flat"> Flat</label>
+        <label class="choice"><input type="radio" name="roof_design" value="Angle"> Angle (single-pitch / sloped)</label>
+        <label class="choice"><input type="radio" name="roof_design" value="A-frame"> A-frame</label>
+      </div>
+    </div>
+
     <label class="field-label">Approx. roof size <span class="opt">(sq ft, if known)</span></label>
-    <input type="number" id="q_roof_size" placeholder="e.g. 1200">
+    <input type="number" id="q_roof_size" placeholder="e.g. 1200" inputmode="decimal">
+    <label class="field-label" style="margin-top:8px;font-size:12.5px;color:#8A8370;">Square meters <span class="opt">(auto-converted, or enter directly if you only know meters)</span></label>
+    <input type="number" id="q_roof_size_m2" placeholder="auto-converted" inputmode="decimal">
 
     <label class="field-label">House square footage</label>
-    <input type="number" id="q_house_sqft" placeholder="e.g. 1800">
+    <input type="number" id="q_house_sqft" placeholder="e.g. 1800" inputmode="decimal">
+    <label class="field-label" style="margin-top:8px;font-size:12.5px;color:#8A8370;">Square meters <span class="opt">(auto-converted, or enter directly if you only know meters)</span></label>
+    <input type="number" id="q_house_sqft_m2" placeholder="auto-converted" inputmode="decimal">
 
     <label class="field-label">Sun exposure</label>
     <div class="choice-grid" data-radio="q_sun_exposure">
@@ -297,6 +311,13 @@
       <label class="choice"><input type="radio" name="existing_power" value="Yes"> Yes</label>
       <label class="choice"><input type="radio" name="existing_power" value="No"> No</label>
     </div>
+
+    <label class="field-label">Picture of the front of your house</label>
+    <div class="upload-box">
+      📷 Tap to attach a photo
+      <input type="file" id="q_house_photo" accept="image/*">
+      <div class="hint" style="margin-top:8px;">Helps us see roof access, shading, and overall layout. If you're sending this back via WhatsApp, you can skip this and just attach the photo directly in the chat.</div>
+    </div>
   </div>
 
   <!-- SECTION 3 -->
@@ -307,7 +328,7 @@
     <label class="field-label">Upload a photo of your most recent BEL bill</label>
     <div class="upload-box">
       📄 Tap to attach a photo
-      <input type="file" id="q_bill_upload" accept="image/*">
+      <input type="file" id="q_bill_upload" accept="image/*,application/pdf">
       <div class="hint" style="margin-top:8px;">If you're sending this back via WhatsApp, you can skip this upload and just attach the photo directly in the chat.</div>
     </div>
 
@@ -365,6 +386,31 @@
         <label class="choice"><input type="radio" name="outage_freq" value="Very frequent"> Very frequent</label>
       </div>
     </div>
+
+    <label class="field-label" style="margin-top:26px;">Overnight meter readings <span class="opt">(optional, but very helpful)</span></label>
+    <p class="hint" style="margin-top:-2px;">If possible, read your meter at 7:00pm and again at 7:00am for 3 nights in a row. The difference tells us exactly how much power you use overnight — the most accurate way to size your battery.</p>
+
+    <div class="qty-row" style="flex-direction:column;align-items:stretch;gap:8px;">
+      <span class="name">Day 1</span>
+      <div style="display:flex;gap:8px;">
+        <input type="text" id="q_meter_d1_pm" placeholder="7:00pm reading" style="flex:1;">
+        <input type="text" id="q_meter_d1_am" placeholder="7:00am reading" style="flex:1;">
+      </div>
+    </div>
+    <div class="qty-row" style="flex-direction:column;align-items:stretch;gap:8px;">
+      <span class="name">Day 2</span>
+      <div style="display:flex;gap:8px;">
+        <input type="text" id="q_meter_d2_pm" placeholder="7:00pm reading" style="flex:1;">
+        <input type="text" id="q_meter_d2_am" placeholder="7:00am reading" style="flex:1;">
+      </div>
+    </div>
+    <div class="qty-row" style="flex-direction:column;align-items:stretch;gap:8px;">
+      <span class="name">Day 3</span>
+      <div style="display:flex;gap:8px;">
+        <input type="text" id="q_meter_d3_pm" placeholder="7:00pm reading" style="flex:1;">
+        <input type="text" id="q_meter_d3_am" placeholder="7:00am reading" style="flex:1;">
+      </div>
+    </div>
   </div>
 
   <!-- SECTION 6 -->
@@ -412,7 +458,11 @@
     <div class="choice-grid">
       <label class="choice"><input type="checkbox" id="other_solar_fan_ac" value="Solar fans or solar AC"> Solar fans or solar AC</label>
       <label class="choice"><input type="checkbox" id="other_portable_battery" value="Portable solar battery/lamp (for fishing)"> Portable solar battery/lamp (for fishing)</label>
-      <label class="choice"><input type="checkbox" id="other_misc_interest" value="Other"> Other</label>
+      <label class="choice"><input type="checkbox" id="other_misc_interest" value="Other"> Something else not listed here</label>
+    </div>
+    <div id="otherInterestWrap" class="toggle-extra">
+      <label class="field-label">What else are you interested in?</label>
+      <input type="text" id="q_other_interest_detail" placeholder="Tell us briefly">
     </div>
 
     <label class="field-label">Anything else we should know? <span class="opt">(optional)</span></label>
@@ -446,7 +496,7 @@
     </div>
   </div>
 
-  <footer>Belize Solar &middot; Senmonni LLC &middot; Your info is only used to prepare your solar estimate.</footer>
+  <footer>Lumova Group &middot; Belize Solar &middot; Your info is only used to prepare your solar estimate.</footer>
 
 </div>
 
@@ -494,6 +544,42 @@
     });
   });
 
+  // "something else" product interest toggle
+  document.getElementById('other_misc_interest').addEventListener('change', e=>{
+    document.getElementById('otherInterestWrap').classList.toggle('show', e.target.checked);
+  });
+
+  // roof design only shown for zinc/metal roofs
+  document.querySelectorAll('input[name="roof_type"]').forEach(r=>{
+    r.addEventListener('change', e=>{
+      document.getElementById('roofDesignWrap').classList.toggle('show', e.target.value==='Zinc / metal');
+    });
+  });
+
+  // sq ft <-> sq meters auto-conversion (1 sq ft = 0.092903 sq m)
+  function wireSqftToM2(sqftId, m2Id){
+    const sqftEl = document.getElementById(sqftId);
+    const m2El = document.getElementById(m2Id);
+    let lastEdited = null;
+    sqftEl.addEventListener('input', ()=>{
+      lastEdited = 'sqft';
+      if(sqftEl.value === ''){ return; }
+      const m2 = parseFloat(sqftEl.value) * 0.092903;
+      m2El.value = isNaN(m2) ? '' : Math.round(m2 * 100) / 100;
+    });
+    m2El.addEventListener('input', ()=>{
+      lastEdited = 'm2';
+      if(m2El.value === ''){ return; }
+      const sqft = parseFloat(m2El.value) / 0.092903;
+      // only auto-fill sqft if the person is editing m2 directly (didn't already have a sqft value from the other field)
+      if(lastEdited === 'm2' && sqftEl.value === ''){
+        sqftEl.value = isNaN(sqft) ? '' : Math.round(sqft * 100) / 100;
+      }
+    });
+  }
+  wireSqftToM2('q_roof_size', 'q_roof_size_m2');
+  wireSqftToM2('q_house_sqft', 'q_house_sqft_m2');
+
   // section nav
   const sections = Array.from(document.querySelectorAll('.section'));
   let current = 0;
@@ -527,8 +613,12 @@
   function buildSummary(){
     const overnightMap = {ov_fans:'Fans', ov_ac:'AC', ov_fridge:'Fridge', ov_other:'Other'};
     const overnight = checkedList(Object.keys(overnightMap)).map(id=>overnightMap[id]);
-    const otherProductsMap = {other_solar_fan_ac:'Solar fans or solar AC', other_portable_battery:'Portable solar battery/lamp (for fishing)', other_misc_interest:'Other'};
+    const otherProductsMap = {other_solar_fan_ac:'Solar fans or solar AC', other_portable_battery:'Portable solar battery/lamp (for fishing)'};
     const otherProducts = checkedList(Object.keys(otherProductsMap)).map(id=>otherProductsMap[id]);
+    if(document.getElementById('other_misc_interest').checked){
+      const detail = val('q_other_interest_detail');
+      otherProducts.push(detail ? `Something else: ${detail}` : 'Something else (not specified)');
+    }
     const goalsMap = {goal_bill:'Reduce my monthly BEL bill', goal_backup:'Backup power during outages', goal_offgrid:'Go fully off-grid', goal_commercial:'Commercial or farm use'};
     const goals = checkedList(Object.keys(goalsMap)).map(id=>goalsMap[id]);
     const lines = [
@@ -544,10 +634,12 @@
 `-- Property --`,
 `Install location: ${radioVal('install_location')}`,
 `Roof type: ${radioVal('roof_type')}`,
-`Roof size: ${val('q_roof_size')} sq ft`,
-`House size: ${val('q_house_sqft')} sq ft`,
+`Roof design: ${radioVal('roof_design')}`,
+`Roof size: ${val('q_roof_size')} sq ft (${val('q_roof_size_m2')} sq m)`,
+`House size: ${val('q_house_sqft')} sq ft (${val('q_house_sqft_m2')} sq m)`,
 `Sun exposure: ${radioVal('sun_exposure')}`,
 `Existing solar/generator: ${radioVal('existing_power')}`,
+`Front-of-house photo: ${document.getElementById('q_house_photo').files.length ? 'Attached in form' : 'Will attach separately in WhatsApp'}`,
 ``,
 `-- Electricity Bill --`,
 `Avg monthly bill: BZD ${val('q_avg_bill')}`,
@@ -562,6 +654,9 @@
 `Runs overnight: ${overnight.join(', ') || 'None selected'}`,
 `AC overnight hours: ${radioVal('ac_hours')}`,
 `Frequent outages: ${radioVal('outages')}${radioVal('outages')==='Yes' ? ' ('+radioVal('outage_freq')+')' : ''}`,
+`Meter reading Day 1: 7pm ${val('q_meter_d1_pm')} / 7am ${val('q_meter_d1_am')}`,
+`Meter reading Day 2: 7pm ${val('q_meter_d2_pm')} / 7am ${val('q_meter_d2_am')}`,
+`Meter reading Day 3: 7pm ${val('q_meter_d3_pm')} / 7am ${val('q_meter_d3_am')}`,
 ``,
 `-- Goals --`,
 `Main goal(s): ${goals.join(', ') || 'None selected'}`,
@@ -599,19 +694,17 @@
     }
 
     document.getElementById('sendWhatsapp').addEventListener('click', ()=>{
-      copyToClipboard(text).then(()=>{
-        document.getElementById('copyNote').style.display='flex';
-        const shortMsg = "Hi! I just completed my solar assessment. Pasting my answers below:";
-        window.open(`https://wa.me/${phoneForSales}?text=${encodeURIComponent(shortMsg)}`, '_blank');
-      });
+      document.getElementById('copyNote').style.display='flex';
+      copyToClipboard(text);
+      const shortMsg = "Hi! I just completed my solar assessment. Pasting my answers below:";
+      window.location.href = `https://wa.me/${phoneForSales}?text=${encodeURIComponent(shortMsg)}`;
     });
 
     document.getElementById('sendEmail').addEventListener('click', ()=>{
-      copyToClipboard(text).then(()=>{
-        document.getElementById('copyNote').style.display='flex';
-        const subject = 'Solar Assessment Request — ' + (val('q_name') || 'Prospect');
-        window.location.href = `mailto:info@belizesolar.com?subject=${encodeURIComponent(subject)}`;
-      });
+      document.getElementById('copyNote').style.display='flex';
+      copyToClipboard(text);
+      const subject = 'Solar Assessment Request — ' + (val('q_name') || 'Prospect');
+      window.location.href = `mailto:info@belizesolar.com?subject=${encodeURIComponent(subject)}`;
     });
 
     fill.style.width = '100%';
