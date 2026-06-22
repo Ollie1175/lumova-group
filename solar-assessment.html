@@ -484,14 +484,15 @@
   <div class="summary-card hidden" id="summaryCard">
     <h2>You're all set 🌞</h2>
     <p>Review your answers below, then send them to us. WhatsApp is fastest — don't forget to attach a photo of your bill in the chat too.</p>
-    <div class="summary-pre" id="summaryText"></div>
+    <div class="summary-pre" id="summaryText" style="cursor:pointer;"></div>
+    <p class="hint" style="margin-top:-6px;margin-bottom:14px;">Tip: tap the box above to select all the text if you ever need to copy it manually.</p>
     <button class="btn-link btn-whatsapp" id="sendWhatsapp" style="border-radius:10px;padding:13px;font-weight:700;border:none;width:100%;font-size:15px;cursor:pointer;">Send via WhatsApp</button>
     <button class="btn-link btn-email" id="sendEmail" style="border-radius:10px;padding:13px;font-weight:700;border:none;width:100%;font-size:15px;cursor:pointer;margin-top:10px;">Send via Email instead</button>
     <div id="copyNote" class="copy-banner" style="display:none;">
       <div class="copy-banner-icon">📋</div>
       <div>
         <div class="copy-banner-title">PASTE NOW</div>
-        <div class="copy-banner-sub">Your answers are copied. Press and hold the message box, then tap <strong>Paste</strong>.</div>
+        <div class="copy-banner-sub">Your answers are copied. Press and hold the message box, tap <strong>Paste</strong> — then send. Don't tap send before pasting.</div>
       </div>
     </div>
   </div>
@@ -677,26 +678,38 @@
     document.getElementById('navCard').classList.add('hidden');
     const text = buildSummary();
     document.getElementById('summaryText').textContent = text;
+
+    document.getElementById('summaryText').addEventListener('click', function(){
+      const range = document.createRange();
+      range.selectNodeContents(this);
+      const sel = window.getSelection();
+      sel.removeAllRanges();
+      sel.addRange(range);
+    });
     document.getElementById('summaryCard').classList.remove('hidden');
 
     const phoneForSales = "5016294028"; // Senmonni LLC / Belize Solar WhatsApp
 
     function copyToClipboard(str){
-      if(navigator.clipboard && navigator.clipboard.writeText){
-        return navigator.clipboard.writeText(str);
-      }
+      // Synchronous copy first — guaranteed to finish before navigation happens,
+      // unlike the async Clipboard API which can race against opening WhatsApp.
       const ta = document.createElement('textarea');
-      ta.value = str; ta.style.position='fixed'; ta.style.opacity='0';
-      document.body.appendChild(ta); ta.select();
-      try{ document.execCommand('copy'); }catch(e){}
+      ta.value = str;
+      ta.style.position='fixed'; ta.style.top='0'; ta.style.left='-9999px'; ta.style.opacity='0';
+      document.body.appendChild(ta);
+      ta.focus(); ta.select();
+      let ok = false;
+      try{ ok = document.execCommand('copy'); }catch(e){ ok = false; }
       document.body.removeChild(ta);
-      return Promise.resolve();
+      if(!ok && navigator.clipboard && navigator.clipboard.writeText){
+        navigator.clipboard.writeText(str);
+      }
     }
 
     document.getElementById('sendWhatsapp').addEventListener('click', ()=>{
       document.getElementById('copyNote').style.display='flex';
       copyToClipboard(text);
-      const shortMsg = "Hi! I just completed my solar assessment. Pasting my answers below:";
+      const shortMsg = "⚠️ DON'T SEND YET — please paste your answers below this line first, then tap send:\n";
       window.location.href = `https://wa.me/${phoneForSales}?text=${encodeURIComponent(shortMsg)}`;
     });
 
