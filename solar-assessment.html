@@ -330,6 +330,9 @@
       <div class="hint" style="margin-top:8px;">No need to upload it here — just attach the photo directly in the same WhatsApp chat as your answers.</div>
     </div>
 
+    <label class="field-label">Average monthly usage <span class="opt">(kWh, found on your bill)</span></label>
+    <input type="number" id="q_monthly_kwh" placeholder="e.g. 350" inputmode="decimal">
+
     <label class="field-label">Average monthly bill amount <span class="opt">(BZD, backup in case photo is hard to read)</span></label>
     <input type="number" id="q_avg_bill" placeholder="e.g. 220">
 
@@ -512,6 +515,7 @@
     {id:'fridge', name:'Refrigerator / freezer', ref:'~150 to 400W, runs continuously'},
     {id:'tv', name:'TVs', ref:'~80 to 200W each'},
     {id:'hot_water', name:'Hot water heater', ref:'~1500 to 4000W'},
+    {id:'washer', name:'Washing machine', ref:'~500 to 1500W'},
     {id:'dryer', name:'Electric dryer', ref:'~2000 to 3000W'},
     {id:'stove', name:'Electric stove / range', ref:'~1500 to 3000W per burner'}
   ];
@@ -647,6 +651,7 @@
 `Front-of-house photo: Attach as a photo in this WhatsApp chat`,
 ``,
 `-- Electricity Bill --`,
+`Avg monthly usage: ${val('q_monthly_kwh')} kWh`,
 `Avg monthly bill: BZD ${val('q_avg_bill')}`,
 `Meter number: ${val('q_meter_number')}`,
 `Bill photo: Attach as a photo in this WhatsApp chat`,
