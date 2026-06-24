@@ -313,10 +313,9 @@
     </div>
 
     <label class="field-label">Picture of the front of your house</label>
-    <div class="upload-box">
-      📷 Tap to attach a photo
-      <input type="file" id="q_house_photo" accept="image/*">
-      <div class="hint" style="margin-top:8px;">Helps us see roof access, shading, and overall layout. If you're sending this back via WhatsApp, you can skip this and just attach the photo directly in the chat.</div>
+    <div class="upload-box" style="text-align:left;">
+      📷 <strong>Take a picture of the front of your house and attach it in WhatsApp before you hit Send.</strong>
+      <div class="hint" style="margin-top:8px;">This helps us see roof access, shading, and overall layout. No need to upload it here — just attach it as a photo in the same WhatsApp chat.</div>
     </div>
   </div>
 
@@ -325,11 +324,10 @@
     <div class="section-title"><span class="section-num">3</span> Your Electricity Bill</div>
     <p class="section-sub">This is the most important part — it tells us how much power you actually use.</p>
 
-    <label class="field-label">Upload a photo of your most recent BEL bill</label>
-    <div class="upload-box">
-      📄 Tap to attach a photo
-      <input type="file" id="q_bill_upload" accept="image/*,application/pdf">
-      <div class="hint" style="margin-top:8px;">If you're sending this back via WhatsApp, you can skip this upload and just attach the photo directly in the chat.</div>
+    <label class="field-label">Your most recent BEL bill</label>
+    <div class="upload-box" style="text-align:left;">
+      📄 <strong>Take a picture of your electricity bill and attach it in WhatsApp before you hit Send.</strong>
+      <div class="hint" style="margin-top:8px;">No need to upload it here — just attach the photo directly in the same WhatsApp chat as your answers.</div>
     </div>
 
     <label class="field-label">Average monthly bill amount <span class="opt">(BZD, backup in case photo is hard to read)</span></label>
@@ -352,8 +350,15 @@
 
   <!-- SECTION 5 -->
   <div class="card section hidden" data-section="5">
-    <div class="section-title"><span class="section-num">5</span> Overnight Usage</div>
+    <div class="section-title"><span class="section-num">5</span> Daily &amp; Overnight Usage</div>
     <p class="section-sub">This helps us size the battery correctly — it's the part that's easy to get wrong.</p>
+
+    <label class="field-label">Roughly how many hours a day is someone home using electricity? <span class="opt">(daytime)</span></label>
+    <div class="choice-grid" data-radio="q_daytime_hours">
+      <label class="choice"><input type="radio" name="daytime_hours" value="Less than 6 hrs"> Less than 6 hours</label>
+      <label class="choice"><input type="radio" name="daytime_hours" value="6 to 12 hrs"> 6 to 12 hours</label>
+      <label class="choice"><input type="radio" name="daytime_hours" value="All day"> All day, someone is always home</label>
+    </div>
 
     <label class="field-label">Which of these run overnight?</label>
     <div class="choice-grid">
@@ -483,11 +488,10 @@
   <!-- SUMMARY / SEND -->
   <div class="summary-card hidden" id="summaryCard">
     <h2>You're all set 🌞</h2>
-    <p>Review your answers below, then send them to us. WhatsApp is fastest — don't forget to attach a photo of your bill in the chat too.</p>
+    <p>Review your answers below, then send them to us on WhatsApp. Don't forget to attach a photo of your bill (and the front of your house) in the chat too.</p>
     <div class="summary-pre" id="summaryText" style="cursor:pointer;"></div>
     <p class="hint" style="margin-top:-6px;margin-bottom:14px;">Tip: tap the box above to select all the text if you ever need to copy it manually.</p>
     <button class="btn-link btn-whatsapp" id="sendWhatsapp" style="border-radius:10px;padding:13px;font-weight:700;border:none;width:100%;font-size:15px;cursor:pointer;">Send via WhatsApp</button>
-    <button class="btn-link btn-email" id="sendEmail" style="border-radius:10px;padding:13px;font-weight:700;border:none;width:100%;font-size:15px;cursor:pointer;margin-top:10px;">Send via Email instead</button>
     <div id="copyNote" class="copy-banner" style="display:none;">
       <div class="copy-banner-icon">📋</div>
       <div>
@@ -586,7 +590,7 @@
   let current = 0;
   const fill = document.getElementById('progressFill');
   const label = document.getElementById('progressLabel');
-  const titles = ['Your Info','Your Property','Your Electricity Bill','Appliances','Overnight Usage','Your Goals','Anything Else?'];
+  const titles = ['Your Info','Your Property','Your Electricity Bill','Appliances','Daily & Overnight Usage','Your Goals','Anything Else?'];
 
   function render(){
     sections.forEach((s,i)=> s.classList.toggle('hidden', i!==current));
@@ -640,18 +644,19 @@
 `House size: ${val('q_house_sqft')} sq ft (${val('q_house_sqft_m2')} sq m)`,
 `Sun exposure: ${radioVal('sun_exposure')}`,
 `Existing solar/generator: ${radioVal('existing_power')}`,
-`Front-of-house photo: ${document.getElementById('q_house_photo').files.length ? 'Attached in form' : 'Will attach separately in WhatsApp'}`,
+`Front-of-house photo: Attach as a photo in this WhatsApp chat`,
 ``,
 `-- Electricity Bill --`,
 `Avg monthly bill: BZD ${val('q_avg_bill')}`,
 `Meter number: ${val('q_meter_number')}`,
-`Bill photo: ${document.getElementById('q_bill_upload').files.length ? 'Attached in form' : 'Will attach separately in WhatsApp'}`,
+`Bill photo: Attach as a photo in this WhatsApp chat`,
 ``,
 `-- Appliances --`,
 ...appliances.map(a=>`${a.name}: ${qty[a.id]}`),
 `Other: ${val('q_other_appliances')}`,
 ``,
 `-- Overnight Usage --`,
+`Daytime usage hours: ${radioVal('daytime_hours')}`,
 `Runs overnight: ${overnight.join(', ') || 'None selected'}`,
 `AC overnight hours: ${radioVal('ac_hours')}`,
 `Frequent outages: ${radioVal('outages')}${radioVal('outages')==='Yes' ? ' ('+radioVal('outage_freq')+')' : ''}`,
@@ -711,13 +716,6 @@
       copyToClipboard(text);
       const shortMsg = "⚠️ DON'T SEND YET — please paste your answers below this line first, then tap send:\n";
       window.location.href = `https://wa.me/${phoneForSales}?text=${encodeURIComponent(shortMsg)}`;
-    });
-
-    document.getElementById('sendEmail').addEventListener('click', ()=>{
-      document.getElementById('copyNote').style.display='flex';
-      copyToClipboard(text);
-      const subject = 'Solar Assessment Request — ' + (val('q_name') || 'Prospect');
-      window.location.href = `mailto:info@belizesolar.com?subject=${encodeURIComponent(subject)}`;
     });
 
     fill.style.width = '100%';
